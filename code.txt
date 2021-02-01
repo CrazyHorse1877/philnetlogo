@@ -1,0 +1,29 @@
+extensions [ gis table ]
+globals [ projection countries-dataset patch-area-sqkm desired-people patches-to-go people-to-go ]
+breed [ persons person ]
+patches-own [ population country-name area population-density ]
+persons-own [ agent-country-name ]
+
+to setup
+  ca
+  set projection "WGS_84_Geographic"
+  
+  ; Note that setting the coordinate system here is optional
+  gis:load-coordinate-system (word "data/" projection ".prj")
+  
+  ; Load the dataset
+  set countries-dataset gis:load-dataset "data/countries.shp"
+  
+  ; Set the world envelope. DS = different x and y scales
+  ; (fits to actual world dimensions -- world does not actually have a perfect 2:1 aspect ratio)
+  gis:set-world-envelope-ds [-180 180 -90 90]
+
+  ; Drawing country boundaries from a shapefile -- as per Uri Wilensky
+  gis:set-drawing-color white
+  gis:draw countries-dataset 1
+  
+  ; New code
+  set patch-area-sqkm (510000000 / count patches)
+  setup-gis
+  reset-ticks
+end
